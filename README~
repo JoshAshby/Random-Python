@@ -1,0 +1,3 @@
+gui.py will use client.py and echoserver-simple.py to 
+send strings through a network socket. gui2.py is a non working simple 
+test that i was messing around with one day at school to learn tkinter
