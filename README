@@ -1,1 +1,4 @@
 gui.py will use client.py and echoserver-simple.py to send strings through a network socket. gui2.py is a non working simple test that i was messing around with one day at school to learn tkinter
+
+pytest has the virtkeyboard.py and test.py files in it, and test.py is a test that i'm messing around with that uses pygame and the virtkeyboard, just figuring some stuff out that i may end up using with PyTe later on
+
