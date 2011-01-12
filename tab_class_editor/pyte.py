@@ -8,6 +8,9 @@ class editor(QtGui.QWidget):
    def __init__(self, parent, main):
        QtGui.QWidget.__init__(self)
 
+       self.__Dir = os.path.dirname(sys.argv[0])
+       self.icons =  os.path.join(self.__Dir, 'icons/')
+
        self.main = main
 
        mainLayout = QtGui.QVBoxLayout()
@@ -38,9 +41,29 @@ class editor(QtGui.QWidget):
        lexer = QsciLexerPython()
        self.editor.setLexer(lexer)
 
+       fileBox = QtGui.QHBoxLayout()
+       mainLayout.addLayout(fileBox, 0)
+
+       self.saveAsButton = QtGui.QPushButton(self)
+       self.saveAsButton.setText("Save As") 
+       fileBox.addWidget(self.saveAsButton)
+       self.connect(self.saveAsButton, QtCore.SIGNAL("clicked()"), self.saveAs)
+
+       self.saveButton = QtGui.QPushButton(self)
+       self.saveButton.setText("Save") 
+       fileBox.addWidget(self.saveButton)
+       self.connect(self.saveButton, QtCore.SIGNAL("clicked()"), self.save)
+
+       self.openButton = QtGui.QPushButton(self)
+       self.openButton.setText("Open") 
+       fileBox.addWidget(self.openButton)
+       self.connect(self.openButton, QtCore.SIGNAL("clicked()"), self.openFile)
+
        mainLayout.addWidget(self.editor, 200)
 
-   def openfile(self):
+       CurrentfileName = ''
+
+   def openFile(self):
       self.fn = QtGui.QFileDialog.getOpenFileName(self, 'Open file', '/home', '')
       if self.fn.isEmpty():
           return
@@ -50,12 +73,27 @@ class editor(QtGui.QWidget):
           self.editor.setText(self.f)
       except:
           return
-      self.setWindowTitle(self.fileName+" - PyTe v2")
+      self.CurrentfileName = self.fileName
+
+   def openArg(self, fileName):
+      self.f = open(self.fileName,'r').read()
+      self.editor.setText(self.f)
 
    def saveAs(self):
       self.fn = QtGui.QFileDialog.getSaveFileName(self, 'Save File', '')
       try:
           self.f = open(str(self.fn),'w+r')
+      except:
+          return
+      self.f.write(str(self.editor.text()))
+      self.f.close()
+
+   def getTitle(self):
+      return self.CurrentfileName
+
+   def save(self):
+      try:
+          self.f = open(self.CurrentfileName,'w+r')
       except:
           return
       self.f.write(str(self.editor.text()))
@@ -106,8 +144,6 @@ class MainWindow(QtGui.QMainWindow):
 
         self.statusBar()
 
-        self.filename = ""
-
         closeTab = QtGui.QAction(QtGui.QIcon(self.icons+'exit.png'), 'Close Tab', self)
         closeTab.setStatusTip('Close Tab')
         self.connect(closeTab, QtCore.SIGNAL('triggered()'), self.closetab)
@@ -128,8 +164,8 @@ class MainWindow(QtGui.QMainWindow):
             fileName = str(fn)
 
             try:
-                f = open(fileName,'r').read()
-                self.code.setText(f)
+                self.editor.openArg(fileName)
+                self.editor.title(fileName)
             except:
                 return
 
